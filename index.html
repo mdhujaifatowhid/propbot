@@ -1,79 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PropBot – Real Estate AI Assistant</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --bg:      #0d1117;
-      --surface: #161b22;
-      --panel:   #1c2330;
-      --border:  rgba(255,255,255,0.08);
-      --navy:    #1a3a6e;
-      --blue:    #3b7ef8;
-      --gold:    #c49a3c;
-      --gold-dim:rgba(196,154,60,0.15);
-      --text:    #e6e1d8;
-      --muted:   #6b7280;
+      --bg:       #0a0e1a;
+      --surface:  #111827;
+      --sidebar:  #0f1623;
+      --border:   rgba(255,255,255,0.08);
+      --text:     #e8e6e0;
+      --muted:    #6b7280;
+      --gold:     #c49a3c;
+      --gold-dim: rgba(196,154,60,0.15);
+      --blue:     #3b7ef8;
+      --blue-dim: rgba(59,126,248,0.15);
+      --radius:   12px;
     }
 
-    * { margin:0; padding:0; box-sizing:border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body {
+    html { height: 100%; }
+
+    body {
       height: 100%;
+      height: 100dvh;
       overflow: hidden;
       font-family: 'DM Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
     }
 
-    /* ── LAYOUT ─────────────────────────────────── */
+    /* ── SHELL ───────────────────────────────── */
     .shell {
       display: flex;
-      height: 100vh;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
     }
 
-    /* ── SIDEBAR ─────────────────────────────────── */
+    /* ── SIDEBAR ─────────────────────────────── */
     .sidebar {
-      width: 220px;
-      min-width: 220px;
-      background: var(--surface);
+      width: 230px;
+      flex-shrink: 0;
+      background: var(--sidebar);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      padding: 16px 12px;
+      padding: 18px 14px;
       gap: 18px;
       overflow-y: auto;
     }
 
-    /* Brand */
     .brand {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding-bottom: 14px;
+      padding-bottom: 16px;
       border-bottom: 1px solid var(--border);
     }
 
     .brand-icon {
       width: 36px; height: 36px;
-      background: linear-gradient(135deg, var(--navy), var(--blue));
+      background: linear-gradient(135deg, #1a3a6e, #3b7ef8);
       border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
+      display: grid; place-items: center;
       font-size: 18px;
-      flex-shrink: 0;
     }
 
     .brand-name {
       font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: 700;
       color: #fff;
     }
 
-    /* Section label */
+    .brand-name span { color: var(--gold); }
+
     .sb-label {
       font-size: 0.65rem;
       font-weight: 600;
@@ -83,15 +88,11 @@
       margin-bottom: 6px;
     }
 
-    /* Stats */
-    .stats-row {
-      display: flex;
-      gap: 8px;
-    }
+    .stats-row { display: flex; gap: 8px; }
 
     .stat-pill {
       flex: 1;
-      background: var(--panel);
+      background: rgba(255,255,255,0.04);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 10px 6px;
@@ -100,47 +101,38 @@
 
     .stat-pill .val {
       font-family: 'Playfair Display', serif;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: var(--gold);
     }
 
-    .stat-pill .key {
-      font-size: 0.65rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
+    .stat-pill .key { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
 
-    /* Quick chips */
-    .chips {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .chips { display: flex; flex-direction: column; gap: 6px; }
 
     .chip {
       background: transparent;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 8px 10px;
+      padding: 9px 10px;
       font-family: 'DM Sans', sans-serif;
       font-size: 0.8rem;
       color: var(--text);
       cursor: pointer;
       text-align: left;
       line-height: 1.4;
-      transition: background .15s, border-color .15s;
+      transition: background .15s, border-color .15s, transform .15s;
     }
 
     .chip:hover {
       background: var(--gold-dim);
       border-color: rgba(196,154,60,0.4);
+      transform: translateX(3px);
     }
 
-    /* New chat btn */
     .new-btn {
       margin-top: auto;
-      background: rgba(59,126,248,0.12);
+      background: var(--blue-dim);
       border: 1px solid rgba(59,126,248,0.3);
       border-radius: 10px;
       padding: 10px;
@@ -149,20 +141,24 @@
       font-size: 0.85rem;
       font-weight: 500;
       cursor: pointer;
-      transition: background .2s;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
-    .new-btn:hover { background: rgba(59,126,248,0.22); }
+    .new-btn:hover { background: rgba(59,126,248,0.25); }
 
-    /* ── MAIN ───────────────────────────────────── */
+    /* ── MAIN ────────────────────────────────── */
     .main {
       flex: 1;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      min-width: 0;
     }
 
-    /* Top bar */
     .topbar {
       padding: 12px 20px;
       border-bottom: 1px solid var(--border);
@@ -170,21 +166,21 @@
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
-      background: var(--surface);
     }
 
-    .topbar-left { display: flex; align-items: center; gap: 8px; }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
 
     .status-dot {
       width: 8px; height: 8px;
-      background: #4ade80;
       border-radius: 50%;
-      animation: pulse 1.5s infinite;
+      background: #4ade80;
+      box-shadow: 0 0 8px rgba(74,222,128,0.7);
+      animation: pdot 2s infinite;
     }
 
-    @keyframes pulse {
-      0%,100% { opacity:1; transform:scale(1); }
-      50%      { opacity:.5; transform:scale(1.3); }
+    @keyframes pdot {
+      0%,100% { opacity:1; }
+      50% { opacity:.4; }
     }
 
     .topbar-title { font-weight: 600; font-size: 0.92rem; }
@@ -195,84 +191,87 @@
       border: 1px solid rgba(196,154,60,0.3);
       border-radius: 20px;
       padding: 4px 12px;
-      font-size: 0.73rem;
+      font-size: 0.72rem;
       font-weight: 500;
       color: var(--gold);
     }
 
-    /* ── CHAT WINDOW ────────────────────────────── */
+    .menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 2px 6px;
+    }
+
+    /* ── CHAT WINDOW ─────────────────────────── */
     #chat-window {
       flex: 1;
       overflow-y: auto;
-      padding: 20px 20px 10px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 14px;
     }
 
     #chat-window::-webkit-scrollbar { width: 4px; }
-    #chat-window::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    #chat-window::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
 
-    /* ── EMPTY STATE ────────────────────────────── */
-    #empty-state {
-      flex: 1;
+    /* Welcome */
+    .welcome {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
+      padding: 16px 10px 10px;
       gap: 10px;
-      padding: 20px;
     }
 
-    #empty-state .es-icon { font-size: 3rem; line-height: 1; }
+    .welcome-icon { font-size: 3rem; filter: drop-shadow(0 0 18px rgba(196,154,60,0.4)); }
 
-    #empty-state h2 {
+    .welcome h2 {
       font-family: 'Playfair Display', serif;
-      font-size: 1.7rem;
-      font-weight: 700;
+      font-size: 1.75rem;
       color: #fff;
     }
 
-    #empty-state p {
-      font-size: 0.88rem;
-      color: var(--muted);
-      max-width: 340px;
-      line-height: 1.6;
-    }
+    .welcome p { color: var(--muted); font-size: 0.88rem; max-width: 340px; line-height: 1.6; }
 
     .starter-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 16px;
+      margin-top: 8px;
       width: 100%;
-      max-width: 520px;
+      max-width: 500px;
     }
 
     .starter-card {
-      background: var(--panel);
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: var(--radius);
       padding: 12px 14px;
       cursor: pointer;
       text-align: left;
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem;
+      font-size: 0.81rem;
       color: var(--text);
       line-height: 1.45;
-      transition: background .2s, border-color .2s, transform .15s;
+      transition: all .2s;
     }
 
-    .starter-card .sc-icon { font-size: 1.1rem; margin-bottom: 6px; display: block; }
+    .starter-card .sc-icon { font-size: 1.1rem; margin-bottom: 5px; display: block; }
 
     .starter-card:hover {
-      background: rgba(59,126,248,0.1);
-      border-color: rgba(59,126,248,0.35);
+      background: var(--blue-dim);
+      border-color: rgba(59,126,248,0.4);
       transform: translateY(-2px);
     }
 
-    /* ── MESSAGES ───────────────────────────────── */
+    /* Messages */
     .msg-row {
       display: flex;
       gap: 10px;
@@ -295,51 +294,43 @@
       margin-top: 2px;
     }
 
-    .msg-row.bot  .msg-avatar { background: linear-gradient(135deg, var(--navy), var(--blue)); }
-    .msg-row.user .msg-avatar { background: var(--panel); border: 1px solid var(--border); }
+    .msg-row.bot  .msg-avatar { background: linear-gradient(135deg, #1a3a6e, #3b7ef8); }
+    .msg-row.user .msg-avatar { background: rgba(196,154,60,0.2); border: 1px solid rgba(196,154,60,0.3); }
 
     .bubble {
       max-width: 72%;
       padding: 10px 14px;
       border-radius: 16px;
       font-size: 0.88rem;
-      line-height: 1.6;
+      line-height: 1.62;
     }
 
-    .msg-row.bot .bubble {
-      background: var(--panel);
+    .msg-row.bot  .bubble {
+      background: var(--surface);
       border: 1px solid var(--border);
       border-bottom-left-radius: 4px;
     }
 
     .msg-row.user .bubble {
-      background: linear-gradient(135deg, var(--navy), var(--blue));
+      background: linear-gradient(135deg, #1a3a6e, #2d5bbf);
+      border: 1px solid rgba(59,126,248,0.3);
       border-bottom-right-radius: 4px;
     }
 
-    .time {
-      font-size: 0.65rem;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
+    .time { font-size: 0.66rem; color: var(--muted); margin-top: 4px; }
     .msg-row.bot  .time { text-align: left; }
     .msg-row.user .time { text-align: right; }
 
-    /* ── TYPING ─────────────────────────────────── */
+    /* Typing */
     .typing-bubble {
       display: none;
-      background: var(--panel);
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 4px 16px 16px 16px;
       padding: 12px 16px;
     }
 
-    .typing-bubble.show {
-      display: inline-flex;
-      gap: 5px;
-      align-items: center;
-    }
+    .typing-bubble.show { display: inline-flex; gap: 5px; align-items: center; }
 
     .typing-dot {
       width: 7px; height: 7px;
@@ -348,93 +339,115 @@
       animation: tdot .9s infinite;
     }
 
-    .typing-dot:nth-child(2) { animation-delay: .15s; }
-    .typing-dot:nth-child(3) { animation-delay: .30s; }
+    .typing-dot:nth-child(2) { animation-delay:.15s; }
+    .typing-dot:nth-child(3) { animation-delay:.30s; }
 
     @keyframes tdot {
       0%,60%,100% { transform:translateY(0); }
-      30%          { transform:translateY(-6px); }
+      30% { transform:translateY(-6px); }
     }
 
-    /* ── INPUT BAR ──────────────────────────────── */
+    /* ── INPUT AREA ──────────────────────────── */
     .input-area {
+      flex-shrink: 0;
       padding: 10px 16px 14px;
       border-top: 1px solid var(--border);
-      flex-shrink: 0;
     }
 
     .input-box {
       display: flex;
       align-items: flex-end;
       gap: 8px;
-      background: var(--panel);
+      background: var(--surface);
       border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 8px 8px 8px 16px;
       transition: border-color .2s;
     }
 
-    .input-box:focus-within {
-      border-color: rgba(59,126,248,0.5);
-    }
+    .input-box:focus-within { border-color: rgba(59,126,248,0.5); }
 
     #user-input {
       flex: 1;
-      background: transparent;
       border: none;
       outline: none;
+      background: transparent;
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       color: var(--text);
       resize: none;
       max-height: 110px;
       line-height: 1.5;
+      scrollbar-width: none;
     }
 
     #user-input::placeholder { color: var(--muted); }
-
     #user-input::-webkit-scrollbar { display: none; }
 
     #send-btn {
       width: 38px; height: 38px;
-      background: linear-gradient(135deg, var(--navy), var(--blue));
-      border: none;
       border-radius: 10px;
+      background: linear-gradient(135deg, #1a3a6e, #3b7ef8);
+      border: none;
       color: #fff;
       font-size: 16px;
       cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
+      display: grid; place-items: center;
       flex-shrink: 0;
-      transition: transform .15s, opacity .15s;
+      transition: all .2s;
     }
 
-    #send-btn:hover  { transform: scale(1.07); }
+    #send-btn:hover  { transform: scale(1.08); }
     #send-btn:active { transform: scale(0.95); }
 
-    .input-hint {
-      font-size: 0.68rem;
-      color: var(--muted);
-      text-align: center;
-      margin-top: 6px;
-    }
+    .input-hint { font-size: 0.7rem; color: var(--muted); text-align: center; margin-top: 6px; }
 
-    /* ── MOBILE ─────────────────────────────────── */
-    @media (max-width: 600px) {
-      .sidebar { display: none; }
+    /* ── MOBILE ──────────────────────────────── */
+    @media (max-width: 680px) {
+      .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0; bottom: 0;
+        z-index: 100;
+        width: 250px;
+        transition: left .25s ease;
+        box-shadow: 4px 0 30px rgba(0,0,0,0.6);
+      }
 
-      .topbar { padding: 10px 14px; }
+      .sidebar.open { left: 0; }
+
+      .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 99;
+      }
+
+      .overlay.show { display: block; }
+
+      .menu-btn { display: block; }
       .model-badge { display: none; }
 
-      #chat-window { padding: 14px 12px 8px; }
+      /* Compact welcome on mobile so input bar is always visible */
+      .welcome { padding: 10px 8px 6px; gap: 7px; }
+      .welcome-icon { font-size: 2rem; }
+      .welcome h2 { font-size: 1.15rem; }
+      .welcome p { font-size: 0.8rem; display: none; }
+      .starter-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+        margin-top: 6px;
+        max-width: 100%;
+      }
+      .starter-card { padding: 9px 10px; font-size: 0.76rem; }
+      .starter-card .sc-icon { font-size: 0.95rem; margin-bottom: 3px; }
 
-      .bubble { max-width: 85%; font-size: 0.85rem; }
-
-      .starter-grid { grid-template-columns: 1fr; max-width: 100%; }
-
-      #empty-state h2 { font-size: 1.35rem; }
-      #empty-state .es-icon { font-size: 2.4rem; }
-
-      .input-area { padding: 8px 10px 12px; }
+      .bubble { max-width: 88%; }
+      #chat-window { padding: 10px 10px 6px; gap: 10px; }
+      .input-area { padding: 6px 10px 10px; }
+      .input-hint { display: none; }
+      .topbar { padding: 10px 12px; }
     }
   </style>
 </head>
@@ -442,12 +455,11 @@
 
 <div class="shell">
 
-  <!-- ── SIDEBAR ───────────────────────────────── -->
-  <aside class="sidebar">
-
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="brand-icon">🏠</div>
-      <div class="brand-name">PropBot</div>
+      <div class="brand-name">Prop<span>Bot</span></div>
     </div>
 
     <div>
@@ -476,16 +488,17 @@
       </div>
     </div>
 
-    <button class="new-btn" onclick="clearChat()">✦ New Conversation</button>
-
+    <button class="new-btn" onclick="newChat()">✦ New Conversation</button>
   </aside>
 
-  <!-- ── MAIN ──────────────────────────────────── -->
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- MAIN -->
   <main class="main">
 
-    <!-- Top bar -->
     <div class="topbar">
       <div class="topbar-left">
+        <button class="menu-btn" onclick="openSidebar()">☰</button>
         <div class="status-dot"></div>
         <div>
           <div class="topbar-title">PropBot AI Assistant</div>
@@ -495,35 +508,27 @@
       <div class="model-badge">⚡ LLaMA 3 · Groq</div>
     </div>
 
-    <!-- Chat window -->
     <div id="chat-window">
-
-      <!-- Empty state -->
-      <div id="empty-state">
-        <div class="es-icon">🏡</div>
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">🏡</div>
         <h2>How can I help you today?</h2>
         <p>Ask me anything about buying, selling, investing, or renting property — anywhere in the world.</p>
         <div class="starter-grid">
           <div class="starter-card" onclick="sendQuick(this)">
-            <span class="sc-icon">🏘️</span>
-            How do I find the best neighborhood for my budget?
+            <span class="sc-icon">🏘️</span>How do I find the best neighborhood for my budget?
           </div>
           <div class="starter-card" onclick="sendQuick(this)">
-            <span class="sc-icon">📊</span>
-            What should I look for in a real estate investment?
+            <span class="sc-icon">📊</span>What should I look for in a real estate investment?
           </div>
           <div class="starter-card" onclick="sendQuick(this)">
-            <span class="sc-icon">🏦</span>
-            Explain mortgage types and which suits first-time buyers.
+            <span class="sc-icon">🏦</span>Explain mortgage types and which suits first-time buyers.
           </div>
           <div class="starter-card" onclick="sendQuick(this)">
-            <span class="sc-icon">📋</span>
-            What's the process of buying a property from start to finish?
+            <span class="sc-icon">📋</span>What's the process of buying a property from start to finish?
           </div>
         </div>
       </div>
 
-      <!-- Typing indicator -->
       <div class="msg-row bot" id="typing-row" style="display:none">
         <div class="msg-avatar">🏠</div>
         <div class="typing-bubble show">
@@ -532,10 +537,8 @@
           <div class="typing-dot"></div>
         </div>
       </div>
-
     </div>
 
-    <!-- Input area -->
     <div class="input-area">
       <div class="input-box">
         <textarea id="user-input" rows="1" placeholder="Ask about properties, prices, investments, mortgages…"></textarea>
@@ -548,21 +551,22 @@
 </div>
 
 <script>
-  const BACKEND_URL = "https://web-production-f437b.up.railway.app/chat";
+  const BACKEND_URL = "https://https://web-production-f437b.up.railway.app/chat";
   let history = [];
 
   function getTime() {
     return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   }
 
+  function removeWelcome() {
+    const w = document.getElementById('welcome');
+    if (w) w.remove();
+  }
+
   function appendMsg(text, role) {
+    removeWelcome();
     const win = document.getElementById('chat-window');
     const typingRow = document.getElementById('typing-row');
-
-    // Hide empty state
-    const es = document.getElementById('empty-state');
-    if (es) es.remove();
-
     const row = document.createElement('div');
     row.className = `msg-row ${role}`;
     row.innerHTML = `
@@ -586,7 +590,7 @@
     if (!text) return;
     input.value = '';
     input.style.height = 'auto';
-
+    closeSidebar();
     appendMsg(text, 'user');
     history.push({ role: 'user', content: text });
     setTyping(true);
@@ -609,21 +613,27 @@
   }
 
   function sendQuick(el) {
-    const text = el.textContent.replace(/^[^\w]+/, '').trim();
-    document.getElementById('user-input').value = text;
+    // Strip emoji prefix from starter cards
+    const raw = el.textContent.trim();
+    const clean = raw.replace(/^[\u{1F000}-\u{1FFFF}✦⚡🏠🏡🏘️📊🏦📋]\s*/gu, '').trim();
+    document.getElementById('user-input').value = clean;
     sendMessage();
   }
 
-  function clearChat() {
+  function newChat() {
     history = [];
     const win = document.getElementById('chat-window');
-    // Remove all msg-rows except typing-row
-    [...win.querySelectorAll('.msg-row:not(#typing-row)')].forEach(r => r.remove());
-    // Re-add empty state
-    const es = document.createElement('div');
-    es.id = 'empty-state';
-    es.innerHTML = `
-      <div class="es-icon">🏡</div>
+    const typingRow = document.getElementById('typing-row');
+    // Clear all children except typing row
+    while (win.firstChild && win.firstChild !== typingRow) {
+      win.removeChild(win.firstChild);
+    }
+    // Restore welcome
+    const w = document.createElement('div');
+    w.className = 'welcome';
+    w.id = 'welcome';
+    w.innerHTML = `
+      <div class="welcome-icon">🏡</div>
       <h2>How can I help you today?</h2>
       <p>Ask me anything about buying, selling, investing, or renting property — anywhere in the world.</p>
       <div class="starter-grid">
@@ -632,7 +642,18 @@
         <div class="starter-card" onclick="sendQuick(this)"><span class="sc-icon">🏦</span>Explain mortgage types and which suits first-time buyers.</div>
         <div class="starter-card" onclick="sendQuick(this)"><span class="sc-icon">📋</span>What's the process of buying a property from start to finish?</div>
       </div>`;
-    win.insertBefore(es, document.getElementById('typing-row'));
+    win.insertBefore(w, typingRow);
+    closeSidebar();
+  }
+
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('overlay').classList.add('show');
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('show');
   }
 
   document.getElementById('user-input').addEventListener('keydown', e => {
